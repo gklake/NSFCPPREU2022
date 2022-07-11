@@ -9,8 +9,8 @@ import nltk
 import re
 from nltk.stem import WordNetLemmatizer
 
-testCSV = pd.read_csv('sentences.csv')
-trainCSV = pd.read_csv('sentencesTrain.csv')
+testCSV = pd.read_csv('csvFiles/sentences.csv')
+trainCSV = pd.read_csv('csvFiles/sentencesTrain.csv')
 
 # stop word removal and lemmatization
 stopWords = nltk.corpus.stopwords.words('english')
