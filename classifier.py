@@ -9,6 +9,10 @@ import nltk
 import re
 from nltk.stem import WordNetLemmatizer
 
+# nltk.download('stopwords')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
+
 testCSV = pd.read_csv('csvFiles/sentences.csv')
 trainCSV = pd.read_csv('csvFiles/sentencesTrain.csv')
 
@@ -16,9 +20,6 @@ trainCSV = pd.read_csv('csvFiles/sentencesTrain.csv')
 stopWords = nltk.corpus.stopwords.words('english')
 lemmatizer = WordNetLemmatizer()
 
-# nltk.download('stopwords')
-# nltk.download('wordnet')
-# nltk.download('omw-1.4')
 # print(trainCSV.head())
 # print(testCSV.head())
 

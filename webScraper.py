@@ -5,6 +5,10 @@ import re
 from nltk import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+# nltk.download('stopwords')
+# nltk.download('wordnet')
+# nltk.download('omw-1.4')
+
 # stop word removal and lemmatization
 stopWords = nltk.corpus.stopwords.words('english')
 lemmatizer = WordNetLemmatizer()
