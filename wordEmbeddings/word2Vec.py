@@ -6,7 +6,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 # Reading the data
-TicketData = pd.read_csv('csvFiles/supportTicketData.csv')
+TicketData = pd.read_csv('../csvFiles/supportTicketData.csv')
 
 # Printing umber of rows and columns
 print(TicketData.shape)
