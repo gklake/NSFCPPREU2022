@@ -35,8 +35,13 @@ for filepath in glob.glob(os.path.join(os.getcwd() + r"\downloadedHTMLPages", '*
 	review = ' '.join(review)
 	corpus.append(review)
 
-
 # TODO: Pass the list of clean text to the TF-IDF Vectorizer using either fit_transform() or fit()
+tfIdf = TfidfVectorizer()
+tfIdf.fit(corpus)
+
+with open('tfIdf_vectorizer.pickle', 'wb') as file:
+	pickle.dump(tfIdf, file)
+
 # TODO: Append a y- or n- to the front or end of each .htm file name to distinguish if its related to criminal hacking
 # TODO: Use the y-/n- to create the label vector(y)
 # TODO: Use method from this link: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
