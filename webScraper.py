@@ -14,6 +14,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # nltk.download('omw-1.4')
 
 # stop word removal and lemmatization
+'''
 stopWords = nltk.corpus.stopwords.words('english')
 lemmatizer = WordNetLemmatizer()
 corpus = []
@@ -41,7 +42,15 @@ tfIdf.fit(corpus)
 
 with open('tfIdf_vectorizer.pickle', 'wb') as file:
 	pickle.dump(tfIdf, file)
+'''
 
+with open('tfIdf_vectorizer.pickle', 'rb') as file:
+	tfIdf = pickle.load(file)
+
+sentence = "usually yes, also there is waf bypass tools on hackbar. In general, you can hack unsafe sites but also you " + \
+					 "can find a vulnerability in 'government' sites or bet sites. Anyway I will open new topics for advanced level"
+testInput = tfIdf.transform([sentence])
+print(testInput)
 
 # TODO: Append a y- or n- to the front or end of each .htm file name to distinguish if its related to criminal hacking
 # TODO: Use the y-/n- to create the label vector(y)
