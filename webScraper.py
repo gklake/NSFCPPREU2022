@@ -1,4 +1,8 @@
 import codecs
+import glob
+import os.path
+import pickle
+
 import nltk
 from bs4 import BeautifulSoup
 import re
@@ -12,32 +16,27 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 # stop word removal and lemmatization
 stopWords = nltk.corpus.stopwords.words('english')
 lemmatizer = WordNetLemmatizer()
+corpus = []
 
-htmlDoc = codecs.open(r"downloadedHTMLPages/CryptBB - Beginner Hacking.htm")
-# html = urlopen('')
+for filepath in glob.glob(os.path.join(os.getcwd() + r"\downloadedHTMLPages", '*.htm')):
+	print(filepath)
+	htmlDoc = codecs.open(filepath, encoding='utf-8')
 
-soup = BeautifulSoup(htmlDoc, 'html.parser')
-# print(soup.prettify())
+	soup = BeautifulSoup(htmlDoc, 'html.parser')
 
-url = input("Enter the URL: ")
+	# url = input("Enter the URL: ")
 
-pageText = soup.text
-cleanPageText = []
-review = re.sub('[^a-zA-z]', ' ', pageText)
-review = review.lower()
-review = review.split()
-review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
-review = ' '.join(review)
-cleanPageText.append(review)
+	pageText = soup.text
 
-unique_words = set(cleanPageText)
-print(unique_words)
+	review = re.sub('[^a-zA-z]', ' ', pageText)
+	review = review.lower()
+	review = review.split()
+	review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
+	review = ' '.join(review)
+	corpus.append(review)
 
 
-# TODO: Find more HTML pages
-# TODO: Loop through all HTML pages and clean text
 # TODO: Pass the list of clean text to the TF-IDF Vectorizer using either fit_transform() or fit()
-# tfIdf = TfidfVectorizer()
-#
-# # applying tf idf to training data
-# xTrainTf = tfIdf.fit_transform(trainX)
+# TODO: Append a y- or n- to the front or end of each .htm file name to distinguish if its related to criminal hacking
+# TODO: Use the y-/n- to create the label vector(y)
+# TODO: Use method from this link: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
