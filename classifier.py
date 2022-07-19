@@ -1,4 +1,10 @@
+import codecs
+import glob
+import os
+
 import pandas as pd
+import sklearn
+from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
@@ -16,19 +22,208 @@ import pickle
 
 stopWords = nltk.corpus.stopwords.words('english')
 lemmatizer = WordNetLemmatizer()
+x = []  # contains clean text
+y = []  # contains the value for cleaned text(1 or 0)
 
 with open('tfIdf_vectorizer.pickle', 'rb') as file:
 	tfIdfVectorizedData = pickle.load(file)
 
-# TODO: create two separate directories, one for positive HTML files and one for negative HTML files
-# TODO: Use a for loop to loop through the HTML files and extract & clean text from them
-# TODO: append the text to the X list and append a 1/0 to the Y list
-# TODO: tfIdf = Transformer()
-# TODO: tfIdf.fit(X)
+# Looping through both HTML directories to extract text from all HTML pages
+# Positive HTMLs:
+for filepath in glob.glob(os.path.join(os.getcwd() + r"\positiveHTMLPages", '*.htm')):
+	print(filepath)
+	htmlDoc = codecs.open(filepath, encoding='utf-8')
+
+	soup = BeautifulSoup(htmlDoc, 'html.parser')
+	pageText = soup.text
+
+	review = re.sub('[^a-zA-Z]', ' ', pageText)
+	review = review.lower()
+	review = review.split()
+	review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
+	review = ' '.join(review)
+	# Appending the text to the x list and appending a 1(true) to the y list
+	x.append(review)
+	y.append(1)
+
+# Negative HTMLs:
+for filepath in glob.glob(os.path.join(os.getcwd() + r"\negativeHTMLPages", '*.htm')):
+	print(filepath)
+	htmlDoc = codecs.open(filepath, encoding='utf-8')
+
+	soup = BeautifulSoup(htmlDoc, 'html.parser')
+	pageText = soup.text
+
+	review = re.sub('[^a-zA-Z]', ' ', pageText)
+	review = review.lower()
+	review = review.split()
+	review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
+	review = ' '.join(review)
+	# Appending the text to the x list and appending a 1(true) to the y list
+	x.append(review)
+	y.append(0)
+
+# used for verifying the text was extracted correctly
+# for i in range(len(y)):
+#  print("X: " + x[i])
+#  print("Y: " + str(y[i]))
+
+# Creating the tfIdf object
+tfIdf = TfidfVectorizer()
+# Fitting tfIdf to the x list
+tfIdf.fit(x)
 # TODO: dump tfIdf to a pickle file
-# TODO: xTrain, xTest, yTrain, yTest = sklearn.split(x, y)
-# TODO: tfIdg.transform(xTrain)
-# TODO: tfIdg.transform(xTest)
-# TODO: train classifier(s)
-# TODO: test classifier(s)
+# splitting the x and y lists into training and testing lists
+xTrain, xTest, yTrain, yTest = sklearn.model_selection.train_test_split(x, y, test_size=0.20)
+
+# transforming xTrain and xTest
+xTrainTf = tfIdf.transform(xTrain)
+xTestTf = tfIdf.transform(xTest)
+
+# Training classifiers:
+# Model Creation
+
+# Naive Bayes
+print("Naive Bayes: ")
+naiveBayesClassifier = MultinomialNB()
+naiveBayesClassifier.fit(xTrainTf, yTrain)
+
+yPred = naiveBayesClassifier.predict(xTestTf)
+print(metrics.classification_report(yTest, yPred, target_names=['Hacking Related', 'Not Hacking Related']))
+
+print("Confusion Matrix:")
+print(metrics.confusion_matrix(yTest, yPred))
+print("***********************************************************************")
+
+# Random Forest
+print("Random Forest: ")
+randomForestClassifier = RandomForestClassifier()
+randomForestClassifier.fit(xTrainTf, yTrain)
+
+yPred = randomForestClassifier.predict(xTestTf)
+print(metrics.classification_report(yTest, yPred, target_names=['Hacking Related', 'Not Hacking Related']))
+
+print("Confusion Matrix:")
+print(metrics.confusion_matrix(yTest, yPred))
+print("***********************************************************************")
+
+# Logistic Regression
+print("Logistic Regression: ")
+logisticRegressionClassifier = LogisticRegression()
+logisticRegressionClassifier.fit(xTrainTf, yTrain)
+
+yPred = logisticRegressionClassifier.predict(xTestTf)
+print(metrics.classification_report(yTest, yPred, target_names=['Hacking Related', 'Not Hacking Related']))
+
+print("Confusion Matrix:")
+print(metrics.confusion_matrix(yTest, yPred))
+print("***********************************************************************")
+
+# Linear SVC
+print("Linear SVC: ")
+linearSVCClassifier = LinearSVC()
+linearSVCClassifier.fit(xTrainTf, yTrain)
+
+yPred = linearSVCClassifier.predict(xTestTf)
+print(metrics.classification_report(yTest, yPred, target_names=['Hacking Related', 'Not Hacking Related']))
+
+print("Confusion Matrix:")
+print(metrics.confusion_matrix(yTest, yPred))
+print("***********************************************************************")
+
+
+# Method used for testing the model with different strings
+def calculatePredictionAndConfidence(text):
+	textReview = re.sub('[^a-zA-Z]', ' ', text[0])
+	textReview = textReview.lower()
+	textReview = textReview.split()
+	textReview = [lemmatizer.lemmatize(word) for word in textReview if word not in set(stopWords)]
+	testProcessed = [' '.join(textReview)]
+	print("testProcessed: ")
+	print(testProcessed)
+	testInput = tfIdf.transform(testProcessed)
+	print("testInput: ")
+	print(testInput)
+	print("testInput.shape: ")
+	print(testInput.shape)
+	# Naive Bayes Classifier Predict & Confidence
+	print("Naive Bayes: ")
+	res = naiveBayesClassifier.predict(testInput)[0]
+	prob = naiveBayesClassifier.predict_proba(testInput)[0]
+	if res == 1:
+		print("Hacking Related")
+		# confidence
+		print(prob[1])
+	elif res == 0:
+		print("Not Hacking Related")
+		print(prob[0])
+	print("***********************************************************************")
+	# Random Forest Predict & Confidence
+	print("Random Forest: ")
+	res = randomForestClassifier.predict(testInput)[0]
+	prob = randomForestClassifier.predict_proba(testInput)[0]
+	if res == 1:
+		print("Hacking Related")
+		# confidence
+		print(prob[1])
+	elif res == 0:
+		print("Not Hacking Related")
+		print(prob[0])
+	print("***********************************************************************")
+	# Logistic Regression Classifier Predict & Confidence
+	print("Logistic Regression: ")
+	res = logisticRegressionClassifier.predict(testInput)[0]
+	prob = logisticRegressionClassifier.predict_proba(testInput)[0]
+	if res == 1:
+		print("Hacking Related")
+		# confidence
+		print(prob[1])
+	elif res == 0:
+		print("Not Hacking Related")
+		print(prob[0])
+	print("***********************************************************************")
+	# Linear SVC Classifier Predict & Confidence
+	print("Linear SVC: ")
+	res = linearSVCClassifier.predict(testInput)[0]
+	prob = linearSVCClassifier._predict_proba_lr(testInput)[0]
+	if res == 1:
+		print("Hacking Related")
+		# confidence
+		print(prob[1])
+	elif res == 0:
+		print("Not Hacking Related")
+		print(prob[0])
+	print("***********************************************************************")
+
+
+# Testing Classifiers:
+calculatePredictionAndConfidence(
+	["Kirby and the Forgotten Land is a 2022 platform video game developed by HAL Laboratory and published by Nintendo "
+	 "for the Nintendo Switch"])
+
+calculatePredictionAndConfidence(
+	["Tennis is a racket sport that can be played individually against a single opponent (singles) or between two "
+	 "teams of two players each (doubles)."])
+
+calculatePredictionAndConfidence(
+	["usually yes, also there is waf bypass tools on hackbar. In general, you can hack unsafe sites but also you "
+	 "can find a vulnerability in 'government' sites or bet sites. Anyway I will open new topics for advanced "
+	 "level"])
+
+calculatePredictionAndConfidence(
+	["Dolly (5 July 1996 – 14 February 2003) was a female Finnish Dorset sheep and the first mammal cloned from an "
+	 "adult somatic cell."])
+
+calculatePredictionAndConfidence(
+	["I am trying to understand if it is really possible to hack these days into a gmail account or any other mail "
+	 "account knowing how good are the security ? and if there is someone capable of doing it ?"])
+
+calculatePredictionAndConfidence(
+	["Goodmorning I was wondering how to hack someone's security cameras i would appreciate any help. Ps : His "
+	 "cameras are not wirelles"])
+
+calculatePredictionAndConfidence(
+	["A snow leopard conservation project was hailed a success, Britain was found to be 'surprisingly' united, "
+	 "and an electric plane took to the skies, plus more."])
+
 # TODO: dump best working classifier to pickle file
