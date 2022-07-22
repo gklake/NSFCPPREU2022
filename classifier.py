@@ -74,7 +74,7 @@ tfIdf = TfidfVectorizer()
 tfIdf.fit(x)
 # TODO: dump tfIdf to a pickle file
 # splitting the x and y lists into training and testing lists
-xTrain, xTest, yTrain, yTest = sklearn.model_selection.train_test_split(x, y, test_size=0.20)
+xTrain, xTest, yTrain, yTest = sklearn.model_selection.train_test_split(x, y, test_size=0.20, random_state=42)
 
 # transforming xTrain and xTest
 xTrainTf = tfIdf.transform(xTrain)
