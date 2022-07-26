@@ -1,3 +1,5 @@
+import re
+import html
 import urllib.request
 import bs4 as bs
 
@@ -8,25 +10,25 @@ rawHTML = request.read()
 rootURL = splitRootAndPath[0]
 print(rootURL)
 
-# Regex to Extract .onion Links: "[a-zA-Z:\/]+.onion[a-zA-Z:\/]*"
-
 articleHTML = bs.BeautifulSoup(rawHTML, 'html.parser')
-allLinks = articleHTML.find_all('a')
+# allLinks = articleHTML.find_all('a')
+allLinks = re.findall(r'[a-zA-Z0-9.:/-]+[.]com[a-zA-Z0-9:/-]*', rawHTML.decode('utf-8'))
 
-print("All Links from " + rootURL + ": ")
+print("\n\nAll Links from " + url + ": ")
 print("**************************************************")
 for link in allLinks:
-   print(link.get('href'))
+   # print(link.get('href'))
+   print(link)
 
-print("Outgoing Links: ")
+print("\n\nOutgoing Links: ")
 print("**************************************************")
 outgoingLinks = []
 for link in allLinks:
-   href = link.get('href')
-   if str(href).startswith(rootURL):
+   # href = link.get('href')
+   if rootURL in link:
       continue
    else:
-      outgoingLinks.append(href)
+      outgoingLinks.append(link)
 
 for link in outgoingLinks:
    print(link)
