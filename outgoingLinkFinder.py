@@ -50,5 +50,5 @@ for link in allLinks:
 for link in outgoingLinks:
 	print(link)
 
-print(len(allLinks))
-print(len(outgoingLinks))
+print("# of All Links: " + str(len(allLinks)))
+print("# of Outgoing Links: " + str(len(outgoingLinks)))
