@@ -11,8 +11,9 @@ print(url)
 print(rootURL)
 
 articleHTML = bs.BeautifulSoup(rawHTML, 'html.parser')
-# allLinks = articleHTML.find_all('a') # finds all <a> tags
-allLinks = re.findall(r'(http:\/\/|https:\/\/)?([a-zA-Z0-9.-]+)([.])(onion|com)(\/[a-zA-Z0-9\/-]*)*', rawHTML.decode('utf-8'))
+# allLinks = articleHTML.find_all('a')  # finds all <a> tags
+allLinks = re.findall(r'(http:\/\/|https:\/\/)?([a-zA-Z0-9.-]+)([.])(onion|com)(\/[a-zA-Z0-9\/-]*)*',
+											rawHTML.decode('utf-8'))
 
 '''
 # All Regex I've Tried:
@@ -33,18 +34,15 @@ allLinks = re.findall(r'(http:\/\/|https:\/\/)?([a-zA-Z0-9.-]+)([.])(onion|com)(
 print("\n\nAll Links from " + url + ": ")
 print("**************************************************")
 for link in allLinks:
-	# print(link.get('href'))
 	print(link)
 
 print("\n\nOutgoing Links: ")
 print("**************************************************")
 outgoingLinks = []
 for link in allLinks:
-	# href = link.get('href')
 	if rootURL in link[0]:  # need to use index 0 if the link is returned in a tuple
 		continue
 	else:
-		# outgoingLinks.append(link)
 		outgoingLinks.append(link[0])  # need to use index 0 if the link is returned in a tuple
 
 for link in outgoingLinks:
