@@ -10,7 +10,28 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\csvFiles\sentences.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\csvFiles\sentencesTrain.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\csvFiles\supportTicketData.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\csvFiles\supportTicketDataTrain.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
