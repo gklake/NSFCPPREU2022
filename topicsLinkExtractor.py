@@ -9,6 +9,8 @@ positiveContent = []
 negativeContent = []
 positiveSurroundingText = []
 negativeSurroundingText = []
+positiveLinks = []
+negativeLinks = []
 clearNetLinks = set()
 onionLinks = set()
 
@@ -71,9 +73,11 @@ print("# of db lines with links:", len(dbLinesWithLinks))
 print("***********************************************************************************************")
 
 for line in positiveContent:
+	positiveLinks.append(re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(line)))
 	positiveSurroundingText.append(re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', line[2]))
 
 for line in negativeContent:
+	negativeLinks.append(re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(line)))
 	negativeSurroundingText.append(re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', line[2]))
 
 print("***********************************************************************************************")
@@ -90,6 +94,9 @@ for line in positiveSurroundingText:
 	positiveFile.write(line)
 	positiveFile.write('\n')
 positiveFile.close()
+
+# for link in positiveLinks:
+# 	print("Positive Link:", ''.join(''.join(l) for l in link), '\n')
 print("***********************************************************************************************")
 
 negativeFile = open('negativeSurroundingContent.txt', 'a+')
@@ -99,4 +106,7 @@ for line in negativeSurroundingText:
 	negativeFile.write(line)
 	negativeFile.write('\n')
 negativeFile.close()
+
+# for link in negativeLinks:
+# 	print("Negative Link:", ''.join(''.join(l) for l in link), '\n')
 print("***********************************************************************************************")

@@ -34,6 +34,7 @@ for line in positiveFile:
 	# Appending the text to the x list and appending a 1(true) to the y list
 	x.append(review)
 	y.append(1)
+positiveFile.close()
 
 # Negative Txt:
 negativeFile = open('negativeSurroundingContent.txt', 'r')
@@ -46,6 +47,7 @@ for line in negativeFile:
 	# Appending the text to the x list and appending a 0(false) to the y list
 	x.append(review)
 	y.append(0)
+negativeFile.close()
 
 # used for verifying the text was extracted correctly
 # for i in range(len(y)):
