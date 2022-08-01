@@ -1,4 +1,3 @@
-import csv
 import re
 
 db = []
@@ -6,6 +5,10 @@ content = []
 allLinks = []
 dbLinesWithLinks = []
 surroundingText = []
+positiveContent = []
+negativeContent = []
+positiveSurroundingText = []
+negativeSurroundingText = []
 clearNetLinks = set()
 onionLinks = set()
 
@@ -17,22 +20,30 @@ with open('topics_v4.txt', 'r', encoding='utf-8', errors='ignore') as csv_file:
 			line = row.split('\t')
 			db.append(line)
 
-
 for row in db:
-	content.append(row[2])
+	if row[3] == 'None\n':
+		continue
+	else:
+		content.append(row[2])
 	# print("Row: ", row[2], "\n\n")
 	currentLinks = re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(row))
 	if len(currentLinks) > 0:
 		dbLinesWithLinks.append(row)
+		if row[3] == 'n\n':
+			negativeContent.append(row)
+		else:
+			positiveContent.append(row)
 
 # for link in allLinks:
 # 	print("Link: ", "".join(link))
 
 allLinks = re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(content))
-print("# of All Links: ", len(allLinks))
+print("# of All Links:", len(allLinks))
+print("Size of content:", len(content))
+print("Size of positive content:", len(positiveContent))
+print("Size of negative content:", len(negativeContent))
 
 print("***********************************************************************************************")
-
 
 for filterLink in allLinks:
 	onionLink = ".onion"
@@ -46,20 +57,46 @@ print("# of Clear Net Links: ", len(clearNetLinks))
 print("# of Onion Links: ", len(onionLinks))
 
 print("***********************************************************************************************")
+
 print("All Onion Links: ")
 for link in onionLinks:
 	print("".join(link))
 
 print("***********************************************************************************************")
 
-for line in dbLinesWithLinks:
-	print("Line:", line, '\n')
+# for line in dbLinesWithLinks:
+# 	print("Line:", line, '\n')
+print("# of db lines with links:", len(dbLinesWithLinks))
 
 print("***********************************************************************************************")
 
-for line in dbLinesWithLinks:
-	surroundingText.append(re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', line[2]))
+for line in positiveContent:
+	positiveSurroundingText.append(re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', line[2]))
 
+for line in negativeContent:
+	negativeSurroundingText.append(re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', line[2]))
 
-print("dbLinesWithLinks[0]:", dbLinesWithLinks[0], '\n')
-print("surroundingText[0]:", surroundingText[0], '\n')
+print("***********************************************************************************************")
+
+print("Size of positive surrounding text:", len(positiveSurroundingText))
+print("Size of negative surrounding text:", len(negativeSurroundingText))
+
+print("***********************************************************************************************")
+
+positiveFile = open('positiveSurroundingContent.txt', 'a+')
+print("Positive Surrounding Text: ")
+for line in positiveSurroundingText:
+	print("Line:", line, "\n")
+	positiveFile.write(line)
+	positiveFile.write('\n')
+positiveFile.close()
+print("***********************************************************************************************")
+
+negativeFile = open('negativeSurroundingContent.txt', 'a+')
+print("Negative Surrounding Text: ")
+for line in negativeSurroundingText:
+	print("Line:", line, "\n")
+	negativeFile.write(line)
+	negativeFile.write('\n')
+negativeFile.close()
+print("***********************************************************************************************")
