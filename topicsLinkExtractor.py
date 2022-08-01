@@ -16,7 +16,7 @@ onionLinks = set()
 
 
 def initializeDB():
-	with open('topics_v4.txt', 'r', encoding='utf-8', errors='ignore') as csv_file:
+	with open('dreadtopics.txt', 'r', encoding='utf-8', errors='ignore') as csv_file:
 		txtFile = csv_file.readlines()
 		for i, row in enumerate(txtFile):
 			if i > 0:
