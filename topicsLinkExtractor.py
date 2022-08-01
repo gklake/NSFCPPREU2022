@@ -63,7 +63,6 @@ def filterLinks():
 
 
 def appendToPositiveFile():
-	global line
 	positiveFile = open('positiveSurroundingContent.txt', 'a+')
 	print("Positive Surrounding Text: ")
 	for line in positiveSurroundingText:
@@ -74,7 +73,6 @@ def appendToPositiveFile():
 
 
 def appendToNegativeFile():
-	global line
 	negativeFile = open('negativeSurroundingContent.txt', 'a+')
 	print("Negative Surrounding Text: ")
 	for line in negativeSurroundingText:
