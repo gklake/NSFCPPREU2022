@@ -1,10 +1,4 @@
-import codecs
-import glob
-import os
-
-import pandas as pd
 import sklearn
-from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.ensemble import RandomForestClassifier
@@ -25,19 +19,14 @@ lemmatizer = WordNetLemmatizer()
 x = []  # contains clean text
 y = []  # contains the value for cleaned text(1 or 0)
 
-with open('tfIdf_vectorizer.pickle', 'rb') as file:
-	tfIdfVectorizedData = pickle.load(file)
+# with open('tfIdf_vectorizer.pickle', 'rb') as file:
+# 	tfIdfVectorizedData = pickle.load(file)
 
-# Looping through both HTML directories to extract text from all HTML pages
-# Positive HTMLs:
-for filepath in glob.glob(os.path.join(os.getcwd() + r"\positiveHTMLPages", '*.htm')):
-	print(filepath)
-	htmlDoc = codecs.open(filepath, encoding='utf-8')
+# Looping through each line of txt files and adding a label
 
-	soup = BeautifulSoup(htmlDoc, 'html.parser')
-	pageText = soup.text
-
-	review = re.sub('[^a-zA-Z]', ' ', pageText)
+positiveFile = open('positiveSurroundingContent.txt', 'r')
+for line in positiveFile:
+	review = re.sub('[^a-zA-Z]', ' ', line)
 	review = review.lower()
 	review = review.split()
 	review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
@@ -46,20 +35,15 @@ for filepath in glob.glob(os.path.join(os.getcwd() + r"\positiveHTMLPages", '*.h
 	x.append(review)
 	y.append(1)
 
-# Negative HTMLs:
-for filepath in glob.glob(os.path.join(os.getcwd() + r"\negativeHTMLPages", '*.htm')):
-	print(filepath)
-	htmlDoc = codecs.open(filepath, encoding='utf-8')
-
-	soup = BeautifulSoup(htmlDoc, 'html.parser')
-	pageText = soup.text
-
-	review = re.sub('[^a-zA-Z]', ' ', pageText)
+# Negative Txt:
+negativeFile = open('negativeSurroundingContent.txt', 'r')
+for line in negativeFile:
+	review = re.sub('[^a-zA-Z]', ' ', line)
 	review = review.lower()
 	review = review.split()
 	review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
 	review = ' '.join(review)
-	# Appending the text to the x list and appending a 1(true) to the y list
+	# Appending the text to the x list and appending a 0(false) to the y list
 	x.append(review)
 	y.append(0)
 
