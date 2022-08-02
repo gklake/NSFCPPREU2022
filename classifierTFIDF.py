@@ -10,6 +10,7 @@ import re
 from nltk.stem import WordNetLemmatizer
 import pickle
 
+# These lines are necessary if you haven't downloaded this before
 # nltk.download('stopwords')
 # nltk.download('wordnet')
 # nltk.download('omw-1.4')
@@ -23,12 +24,13 @@ y = []  # contains the value for cleaned text(1 or 0)
 # 	tfIdfVectorizedData = pickle.load(file)
 
 # Looping through each line of txt files and adding a label
-
+# Positive Txt:
 positiveFile = open('positiveSurroundingContent.txt', 'r')
 for line in positiveFile:
 	review = re.sub('[^a-zA-Z]', ' ', line)
 	review = review.lower()
 	review = review.split()
+	# removing stop words and lemmatizing text from file
 	review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
 	review = ' '.join(review)
 	# Appending the text to the x list and appending a 1(true) to the y list
@@ -42,6 +44,7 @@ for line in negativeFile:
 	review = re.sub('[^a-zA-Z]', ' ', line)
 	review = review.lower()
 	review = review.split()
+	# removing stop words and lemmatizing text from file
 	review = [lemmatizer.lemmatize(word) for word in review if word not in set(stopWords)]
 	review = ' '.join(review)
 	# Appending the text to the x list and appending a 0(false) to the y list
@@ -49,16 +52,15 @@ for line in negativeFile:
 	y.append(0)
 negativeFile.close()
 
-# used for verifying the text was extracted correctly
-# for i in range(len(y)):
-#  print("X: " + x[i])
-#  print("Y: " + str(y[i]))
 
 # Creating the tfIdf object
 tfIdf = TfidfVectorizer()
+
 # Fitting tfIdf to the x list
 tfIdf.fit(x)
+
 # TODO: dump tfIdf to a pickle file
+
 # splitting the x and y lists into training and testing lists
 xTrain, xTest, yTrain, yTest = sklearn.model_selection.train_test_split(x, y, test_size=0.20, random_state=42)
 
@@ -68,8 +70,7 @@ xTestTf = tfIdf.transform(xTest)
 
 # Training classifiers:
 # Model Creation
-
-# Naive Bayes
+# ------------------------------------------------- Naive Bayes -------------------------------------------------
 print("Naive Bayes: ")
 naiveBayesClassifier = MultinomialNB()
 naiveBayesClassifier.fit(xTrainTf, yTrain)
@@ -81,7 +82,7 @@ print("Confusion Matrix:")
 print(metrics.confusion_matrix(yTest, yPred))
 print("***********************************************************************")
 
-# Random Forest
+# ------------------------------------------------- Random Forest -------------------------------------------------
 print("Random Forest: ")
 randomForestClassifier = RandomForestClassifier()
 randomForestClassifier.fit(xTrainTf, yTrain)
@@ -93,7 +94,7 @@ print("Confusion Matrix:")
 print(metrics.confusion_matrix(yTest, yPred))
 print("***********************************************************************")
 
-# Logistic Regression
+# ------------------------------------------------ Logistic Regression ------------------------------------------------
 print("Logistic Regression: ")
 logisticRegressionClassifier = LogisticRegression()
 logisticRegressionClassifier.fit(xTrainTf, yTrain)
@@ -105,7 +106,7 @@ print("Confusion Matrix:")
 print(metrics.confusion_matrix(yTest, yPred))
 print("***********************************************************************")
 
-# Linear SVC
+# ------------------------------------------------- Linear SVC -------------------------------------------------
 print("Linear SVC: ")
 linearSVCClassifier = LinearSVC()
 linearSVCClassifier.fit(xTrainTf, yTrain)
@@ -123,6 +124,7 @@ def calculatePredictionAndConfidence(text):
 	textReview = re.sub('[^a-zA-Z]', ' ', text[0])
 	textReview = textReview.lower()
 	textReview = textReview.split()
+	# removing stop words and lemmatizing text from file
 	textReview = [lemmatizer.lemmatize(word) for word in textReview if word not in set(stopWords)]
 	testProcessed = [' '.join(textReview)]
 	print("testProcessed: ")
@@ -132,42 +134,25 @@ def calculatePredictionAndConfidence(text):
 	print(testInput)
 	print("testInput.shape: ")
 	print(testInput.shape)
-	# Naive Bayes Classifier Predict & Confidence
-	print("Naive Bayes: ")
-	res = naiveBayesClassifier.predict(testInput)[0]
-	prob = naiveBayesClassifier.predict_proba(testInput)[0]
-	if res == 1:
-		print("Hacking Related")
-		# confidence
-		print(prob[1])
-	elif res == 0:
-		print("Not Hacking Related")
-		print(prob[0])
+
+	naiveBayesClassify(testInput)
+
 	print("***********************************************************************")
-	# Random Forest Predict & Confidence
-	print("Random Forest: ")
-	res = randomForestClassifier.predict(testInput)[0]
-	prob = randomForestClassifier.predict_proba(testInput)[0]
-	if res == 1:
-		print("Hacking Related")
-		# confidence
-		print(prob[1])
-	elif res == 0:
-		print("Not Hacking Related")
-		print(prob[0])
+
+	randomForestClassify(testInput)
+
 	print("***********************************************************************")
-	# Logistic Regression Classifier Predict & Confidence
-	print("Logistic Regression: ")
-	res = logisticRegressionClassifier.predict(testInput)[0]
-	prob = logisticRegressionClassifier.predict_proba(testInput)[0]
-	if res == 1:
-		print("Hacking Related")
-		# confidence
-		print(prob[1])
-	elif res == 0:
-		print("Not Hacking Related")
-		print(prob[0])
+
+	logisticRegressionClassify(testInput)
+
 	print("***********************************************************************")
+
+	linearSVCClassify(testInput)
+
+	print("***********************************************************************")
+
+
+def linearSVCClassify(testInput):
 	# Linear SVC Classifier Predict & Confidence
 	print("Linear SVC: ")
 	res = linearSVCClassifier.predict(testInput)[0]
@@ -179,7 +164,48 @@ def calculatePredictionAndConfidence(text):
 	elif res == 0:
 		print("Not Hacking Related")
 		print(prob[0])
-	print("***********************************************************************")
+
+
+def logisticRegressionClassify(testInput):
+	# Logistic Regression Classifier Predict & Confidence
+	print("Logistic Regression: ")
+	res = logisticRegressionClassifier.predict(testInput)[0]
+	prob = logisticRegressionClassifier.predict_proba(testInput)[0]
+	if res == 1:
+		print("Hacking Related")
+		# confidence
+		print(prob[1])
+	elif res == 0:
+		print("Not Hacking Related")
+		print(prob[0])
+
+
+def randomForestClassify(testInput):
+	# Random Forest Predict & Confidence
+	print("Random Forest: ")
+	res = randomForestClassifier.predict(testInput)[0]
+	prob = randomForestClassifier.predict_proba(testInput)[0]
+	if res == 1:
+		print("Hacking Related")
+		# confidence
+		print(prob[1])
+	elif res == 0:
+		print("Not Hacking Related")
+		print(prob[0])
+
+
+def naiveBayesClassify(testInput):
+	# Naive Bayes Classifier Predict & Confidence
+	print("Naive Bayes: ")
+	res = naiveBayesClassifier.predict(testInput)[0]
+	prob = naiveBayesClassifier.predict_proba(testInput)[0]
+	if res == 1:
+		print("Hacking Related")
+		# confidence
+		print(prob[1])
+	elif res == 0:
+		print("Not Hacking Related")
+		print(prob[0])
 
 
 # Testing Classifiers:
