@@ -13,6 +13,8 @@ positiveLinks = []
 negativeLinks = []
 clearNetLinks = set()
 onionLinks = set()
+positiveContentDict = {}
+negativeContentDict = {}
 
 
 def initializeDB():
@@ -41,15 +43,17 @@ def extractContent():
 
 def gatherSurroundingText():
 	for positiveLine in positiveContent:
-		positiveLinks.append(
-			re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(positiveLine)))
+		positiveLinks = re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(positiveLine))
+		joinedPositiveLinks = [''.join(tups) for tups in positiveLinks]
 		positiveSurroundingText.append(
 			re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', positiveLine[2]))
+		positiveContentDict[re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', positiveLine[2])] = joinedPositiveLinks
 	for negativeLine in negativeContent:
-		negativeLinks.append(
-			re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(negativeLine)))
+		negativeLinks = re.findall(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', str(negativeLine))
+		joinedNegativeLinks = [''.join(tups) for tups in negativeLinks]
 		negativeSurroundingText.append(
 			re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', negativeLine[2]))
+		negativeContentDict[re.sub(r'(http://|https://)?([a-zA-Z\d.-]+)([.])(onion|com|org|net)(/[a-zA-Z\d/-]*)*', '', negativeLine[2])] = joinedNegativeLinks
 
 
 def filterLinks():
@@ -123,12 +127,20 @@ print("*************************************************************************
 
 appendToPositiveFile()
 
-# for link in positiveLinks:
-# 	print("Positive Link:", ''.join(''.join(l) for l in link), '\n')
 print("***********************************************************************************************")
 
 appendToNegativeFile()
 
-# for link in negativeLinks:
-# 	print("Negative Link:", ''.join(''.join(l) for l in link), '\n')
+print("***********************************************************************************************")
+
+print("Positive Content Dictionary:")
+for key in positiveContentDict:
+	print("Key:", key, "\n\tValue:", positiveContentDict[key])
+
+print("***********************************************************************************************")
+
+print("Negative Content Dictionary:")
+for key in negativeContentDict:
+	print("Key:", key, "\n\tValue:", negativeContentDict[key])
+
 print("***********************************************************************************************")
